@@ -20,9 +20,11 @@ const body: BodyPartConstant[] = [WORK, WORK, CARRY, MOVE];
 const anotherRoomName: Room = Game.rooms.W10S11;
 
 // Sample memory extensions
-interface CreepMemory {
-    sourceId: Id<Source>;
-    lastHits: number;
+interface Memory {
+    creeps: Record<string, { sourceId: Id<Source>; lastHits: number } & ({ type: "foo"; foo: number } | { type: "bar"; bar: number })>;
+    flags: Record<string, unknown>;
+    spawns: Record<string, unknown>;
+    rooms: Record<string, unknown>;
 }
 
 // Typescript always uses 'string' as the type of a key inside 'for in' loops.
@@ -135,7 +137,14 @@ function resources(o: GenericStore): ResourceConstant[] {
 
 {
     for (const i of Object.keys(Game.spawns)) {
-        Game.spawns[i].createCreep(body);
+        Game.spawns[i].spawnCreep(body, "test", {
+            memory: {
+                sourceId: "" as Id<Source>,
+                lastHits: 0,
+                type: "foo",
+                foo: 1000,
+            },
+        });
 
         // Test StructureSpawn.Spawning
         const creep: Spawning | null = Game.spawns[i].spawning;
